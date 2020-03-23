@@ -1,0 +1,126 @@
+#nubia add for performance
+#
+#Performance optimization extension centralized modification for easy to maintain and porting, reduce conflict and redundancy.
+#
+
+#on early-init
+on init
+    #for cpuset perf
+    write /dev/cpuset/restricted/cpus "0-3"
+    mkdir /dev/cpuset/dex2oat
+    copy /dev/cpuset/cpus /dev/cpuset/dex2oat/cpus
+    copy /dev/cpuset/mems /dev/cpuset/dex2oat/mems
+    mkdir /dev/cpuset/dex2oatfg
+    copy /dev/cpuset/cpus /dev/cpuset/dex2oatfg/cpus
+    copy /dev/cpuset/mems /dev/cpuset/dex2oatfg/mems
+    mkdir /dev/cpuset/systemserver
+    copy /dev/cpuset/cpus /dev/cpuset/systemserver/cpus
+    copy /dev/cpuset/mems /dev/cpuset/systemserver/mems
+    chown system system /dev/cpuset/dex2oat
+    chown system system /dev/cpuset/dex2oatfg
+    chown system system /dev/cpuset/systemserver
+    chown system system /dev/cpuset/dex2oat/tasks
+    chown system system /dev/cpuset/dex2oatfg/tasks
+    chown system system /dev/cpuset/systemserver/tasks
+    chmod 0664 /dev/cpuset/dex2oat/tasks
+    chmod 0664 /dev/cpuset/dex2oatfg/tasks
+    chmod 0664 /dev/cpuset/systemserver/tasks
+    chmod 0666 /dev/cpuset/background/cpus
+    chmod 0666 /dev/cpuset/systemserver/cpus
+    chmod 0666 /dev/cpuset/systemserver/cgroup.procs
+
+#on post-fs
+on early-boot
+    #same funcation as init.qcom.early_boot.sh
+    #exec u:r:qti_init_shell:s0 -- /vendor/bin/init.qcom.early_boot.sh
+
+on boot
+    #for cpuset perf
+    write /dev/cpuset/dex2oat/cpus 0-2,7
+    write /dev/cpuset/dex2oatfg/cpus 3,4-7
+    write /dev/cpuset/systemserver/cpus 0-7
+    write /dev/cpuset/background/cpus 0-3
+    write /dev/cpuset/system-background/cpus 0-3
+
+    #nubia begin add for TGPA
+    write /dev/cpuset/bigcluster/cpus 4-7
+    write /dev/cpuset/littlecluster/cpus 0-3
+    #nubia add for TGPA end
+
+on post-fs-data
+    chown system system /sys/kernel/cpu_pressure/level
+    chmod 444 /sys/kernel/cpu_pressure/level
+
+#for input boost perf
+on property:persist.sys.cpu.input.boost.freq=0
+    write /sys/devices/system/cpu/cpu_boost/input_boost_freq "0:1382400 1:0 2:0 3:0 4:0 5:0 6:0 7:0"
+on property:persist.sys.cpu.input.boost.freq=1
+    write /sys/devices/system/cpu/cpu_boost/input_boost_freq "0:1324800 1:0 2:0 3:0 4:1171200 5:0 6:0 7:0"
+on property:persist.sys.cpu.input.boost.ms=0
+    write /sys/devices/system/cpu/cpu_boost/input_boost_ms "200"
+on property:persist.sys.cpu.input.boost.ms=1
+    write /sys/devices/system/cpu/cpu_boost/input_boost_ms "200"
+
+#for cpufreq ctrl perf
+on property:persist.sys.cpu.cpufreq.ctrl=0
+    write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/cpufreq_ctrl 0
+    write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/cpufreq_ctrl 0
+
+on property:persist.sys.cpu.cpufreq.ctrl=1
+    write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/cpufreq_ctrl 1
+    write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/cpufreq_ctrl 1
+
+on property:persist.sys.cpu.cpufreq.ctrl=2
+    write /sys/devices/system/cpu/cpu0/cpufreq/schedutil/cpufreq_ctrl 2
+    write /sys/devices/system/cpu/cpu4/cpufreq/schedutil/cpufreq_ctrl 2
+
+#init.nubia.post-boot.sh same funcation as init.qcom.post_boot.sh
+
+#nubia add for hardware boost
+on property:persist.sys.cpu.boost=1
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "performance"
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "performance"
+    write /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor "performance"
+
+on property:persist.sys.cpu.boost=0
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "schedutil"
+    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor "schedutil"
+    write /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor "schedutil"
+
+on property:persist.sys.gpu.boost=1
+    write /sys/devices/platform/soc/3d00000.qcom,kgsl-3d0/devfreq/3d00000.qcom,kgsl-3d0/governor "performance"
+    write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 0
+    setprop persist.sys.cpu.old.mode_type ${persist.sys.cpu.mode_type}
+    setprop persist.sys.cpu.mode_type 0
+
+on property:persist.sys.gpu.boost=0
+    write /sys/devices/platform/soc/3d00000.qcom,kgsl-3d0/devfreq/3d00000.qcom,kgsl-3d0/governor "msm-adreno-tz"
+    write /sys/class/kgsl/kgsl-3d0/min_pwrlevel 5
+    setprop persist.sys.cpu.mode_type ${persist.sys.cpu.old.mode_type}
+
+on property:persist.sys.cache.boost=1
+    write /sys/devices/platform/soc/soc:qcom,cpu-cpu-llcc-bw/devfreq/soc:qcom,cpu-cpu-llcc-bw/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu-llcc-ddr-bw/devfreq/soc:qcom,cpu-llcc-ddr-bw/governor "performance"
+    #write /sys/devices/platform/soc/soc:qcom,cpu0-cpu-l3-lat/devfreq/soc:qcom,cpu0-cpu-l3-lat/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu0-cpu-llcc-lat/devfreq/soc:qcom,cpu0-cpu-llcc-lat/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu0-llcc-ddr-lat/devfreq/soc:qcom,cpu0-llcc-ddr-lat/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-ddr-latfloor/devfreq/soc:qcom,cpu4-cpu-ddr-latfloor/governor "performance"
+    #write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-l3-lat/devfreq/soc:qcom,cpu4-cpu-l3-lat/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-ddr-qoslat/devfreq/soc:qcom,cpu4-cpu-ddr-qoslat/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-llcc-lat/devfreq/soc:qcom,cpu4-cpu-llcc-lat/governor "performance"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-llcc-ddr-lat/devfreq/soc:qcom,cpu4-llcc-ddr-lat/governor "performance"
+    #write /sys/devices/platform/soc/soc:qcom,cpu7-cpu-l3-lat/devfreq/soc:qcom,cpu7-cpu-l3-lat/governor "performance"
+
+on property:persist.sys.cache.boost=0
+    write /sys/devices/platform/soc/soc:qcom,cpu-cpu-llcc-bw/devfreq/soc:qcom,cpu-cpu-llcc-bw/governor "bw_hwmon"
+    write /sys/devices/platform/soc/soc:qcom,cpu-llcc-ddr-bw/devfreq/soc:qcom,cpu-llcc-ddr-bw/governor "bw_hwmon"
+    #write /sys/devices/platform/soc/soc:qcom,cpu0-cpu-l3-lat/devfreq/soc:qcom,cpu0-cpu-l3-lat/governor "mem_latency"
+    write /sys/devices/platform/soc/soc:qcom,cpu0-cpu-llcc-lat/devfreq/soc:qcom,cpu0-cpu-llcc-lat/governor "mem_latency"
+    write /sys/devices/platform/soc/soc:qcom,cpu0-llcc-ddr-lat/devfreq/soc:qcom,cpu0-llcc-ddr-lat/governor "mem_latency"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-ddr-latfloor/devfreq/soc:qcom,cpu4-cpu-ddr-latfloor/governor "compute"
+    #write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-l3-lat/devfreq/soc:qcom,cpu4-cpu-l3-lat/governor "mem_latency"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-ddr-qoslat/devfreq/soc:qcom,cpu4-cpu-ddr-qoslat/governor "mem_latency"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-cpu-llcc-lat/devfreq/soc:qcom,cpu4-cpu-llcc-lat/governor "mem_latency"
+    write /sys/devices/platform/soc/soc:qcom,cpu4-llcc-ddr-lat/devfreq/soc:qcom,cpu4-llcc-ddr-lat/governor "mem_latency"
+    #write /sys/devices/platform/soc/soc:qcom,cpu7-cpu-l3-lat/devfreq/soc:qcom,cpu7-cpu-l3-lat/governor "mem_latency"
+#nubia add end

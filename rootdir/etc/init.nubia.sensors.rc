@@ -1,0 +1,146 @@
+# Copyright (c) 2011-2013, The Linux Foundation. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.
+#     * Neither the name of The Linux Foundation nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
+# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+on post-fs-data
+   # Nubia add start
+
+
+    ## for FFBM calibration set result flag
+    chmod 0777 /mnt/vendor/persist/sensors
+
+    chmod 0666 /mnt/vendor/persist/sensors/g_sensor_cal
+    chown system system /mnt/vendor/persist/sensors/g_sensor_cal
+
+    chmod 0666 /mnt/vendor/persist/sensors/xtalk_cal
+    chown system system /mnt/vendor/persist/sensors/xtalk_cal
+
+    chmod 0666 /mnt/vendor/persist/sensors/als_cal_data
+    chown system system /mnt/vendor/persist/sensors/als_cal_data
+    
+    chmod 0666 /mnt/vendor/persist/sensors/als_fac_cal
+    chown system system /mnt/vendor/persist/sensors/als_fac_cal
+
+    chown system system /persist/sensors/rgb_color_cfg
+    chmod 0666 /persist/sensors/rgb_color_cfg
+
+    chown system system /persist/sensors/rgbc_cfg
+    chmod 0666 /persist/sensors/rgbc_cfg
+
+
+    write /sys/bus/msm_subsys/devices/subsys1/restart_level related
+
+    # proximity
+    chown system system /sys/class/proximity/proximity/code
+    chown system system /sys/class/proximity/proximity/codethdh
+    chown system system /sys/class/proximity/proximity/codethdl
+    chown system system /sys/class/proximity/proximity/dev
+    chown system system /sys/class/proximity/proximity/distance
+    chown system system /sys/class/proximity/proximity/enable
+    chown system system /sys/class/proximity/proximity/enableaso
+    chown system system /sys/class/proximity/proximity/htnct
+    chown system system /sys/class/proximity/proximity/ltnct
+    chown system system /sys/class/proximity/proximity/maxdiff
+    chown system system /sys/class/proximity/proximity/offset
+    chown system system /sys/class/proximity/proximity/prox_data_max
+    chown system system /sys/class/proximity/proximity/prox_debug
+    chown system system /sys/class/proximity/proximity/prox_init
+    chown system system /sys/class/proximity/proximity/prox_offset
+    chown system system /sys/class/proximity/proximity/prox_offset_cal
+    chown system system /sys/class/proximity/proximity/prox_thres
+    chown system system /sys/class/proximity/proximity/prox_thres_max
+    chown system system /sys/class/proximity/proximity/prox_thres_min
+    chown system system /sys/class/proximity/proximity/prox_thres_to_persist
+    chown system system /sys/class/proximity/proximity/prox_uncover_max
+    chown system system /sys/class/proximity/proximity/prox_uncover_min
+    chown system system /sys/class/proximity/proximity/prox_value
+    chown system system /sys/class/proximity/proximity/recv
+    chown system system /sys/class/proximity/proximity/send
+    chown system system /sys/class/proximity/proximity/status
+ 
+    chmod 0664 /sys/class/proximity/proximity/allreg
+    chmod 0664 /sys/class/proximity/proximity/cali
+    chmod 0664 /sys/class/proximity/proximity/chip_name
+    chmod 0664 /sys/class/proximity/proximity/code
+    chmod 0664 /sys/class/proximity/proximity/codethdh
+    chmod 0664 /sys/class/proximity/proximity/codethdl
+    chmod 0664 /sys/class/proximity/proximity/dev
+    chmod 0664 /sys/class/proximity/proximity/distance
+    chmod 0664 /sys/class/proximity/proximity/enable
+    chmod 0664 /sys/class/proximity/proximity/enableaso
+    chmod 0664 /sys/class/proximity/proximity/htnct
+    chmod 0664 /sys/class/proximity/proximity/ltnct
+    chmod 0664 /sys/class/proximity/proximity/maxdiff
+    chmod 0664 /sys/class/proximity/proximity/offset
+    chmod 0664 /sys/class/proximity/proximity/prox_data_max
+    chmod 0664 /sys/class/proximity/proximity/prox_debug
+    chmod 0664 /sys/class/proximity/proximity/prox_init
+    chmod 0664 /sys/class/proximity/proximity/prox_offset
+    chmod 0664 /sys/class/proximity/proximity/prox_offset_cal
+    chmod 0664 /sys/class/proximity/proximity/prox_thres
+    chmod 0664 /sys/class/proximity/proximity/prox_thres_max
+    chmod 0664 /sys/class/proximity/proximity/prox_thres_min
+    chmod 0664 /sys/class/proximity/proximity/prox_thres_to_persist
+    chmod 0664 /sys/class/proximity/proximity/prox_uncover_max
+    chmod 0664 /sys/class/proximity/proximity/prox_uncover_min
+    chmod 0664 /sys/class/proximity/proximity/prox_value
+    chmod 0664 /sys/class/proximity/proximity/recv
+    chmod 0664 /sys/class/proximity/proximity/send
+    chmod 0664 /sys/class/proximity/proximity/status
+
+
+    # light
+    chown system system /sys/class/light/light/calibrate
+    chown system system /sys/class/light/light/chip_name
+    chown system system /sys/class/light/light/code
+    chown system system /sys/class/light/light/dev
+    chown system system /sys/class/light/light/dev_init
+    chown system system /sys/class/light/light/enable
+    chown system system /sys/class/light/light/fac_calibrate
+    chown system system /sys/class/light/light/als_calibrate
+    chown system system /sys/class/light/light/firlen
+    chown system system /sys/class/light/light/ircode
+    chown system system /sys/class/light/light/lux
+    chown system system /sys/class/light/light/transmittance
+
+    chmod 0664 /sys/class/light/light/calibrate
+    chmod 0664 /sys/class/light/light/chip_name
+    chmod 0664 /sys/class/light/light/code
+    chmod 0664 /sys/class/light/light/dev
+    chmod 0664 /sys/class/light/light/dev_init
+    chmod 0664 /sys/class/light/light/enable
+    chmod 0664 /sys/class/light/light/als_calibrate
+    chmod 0664 /sys/class/light/light/fac_calibrate
+    chmod 0664 /sys/class/light/light/firlen
+    chmod 0664 /sys/class/light/light/ircode
+    chmod 0664 /sys/class/light/light/lux
+    chmod 0664 /sys/class/light/light/transmittance
+
+
+    # Nubia add end
+
